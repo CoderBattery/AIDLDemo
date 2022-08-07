@@ -1,2 +1,2 @@
-include ':app'
+include ':app', ':aidllib', ':service', ':client'
 rootProject.name='AIDLDemo'
