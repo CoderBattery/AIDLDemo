@@ -37,6 +37,22 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "onServiceConnected: "+name+", "+service);
 //            testAidlInterface = ITestAidlInterface.Stub.asInterface(service);
             bookManager = BookManager.Stub.asInterface(service);
+
+            try {
+                bookManager.asBinder().linkToDeath(new IBinder.DeathRecipient() {
+                    @Override
+                    public void binderDied() {
+                        Log.d(TAG, "binderDied: ");
+
+                        //取消死亡代理
+                        if (bookManager != null) {
+                            bookManager.asBinder().unlinkToDeath(this, 0);
+                        }
+                    }
+                }, 0);
+            } catch (RemoteException exception) {
+                exception.printStackTrace();
+            }
         }
 
         @Override
@@ -115,5 +131,10 @@ public class MainActivity extends AppCompatActivity {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    public void isBinderAlive(View view) {
+        boolean binderAlive = bookManager.asBinder().isBinderAlive();
+        Log.d(TAG, "isBinderAlive: "+binderAlive);
     }
 }
